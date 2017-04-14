@@ -43,11 +43,17 @@ export GLM_INCLUDE_DIR=/usr/include/glm/
 mkdir -p "$site_directory/$student/"
 student_site="$site_directory/$student/index.html"
 
+# Header info
 echo > "$student_site"
 cat "$html_directory/top.html" >> "$student_site"
 echo '<h1>[CPE 473] Program 1 Grade Results</h1>' >> "$student_site"
 echo "<p>Student: $student</p>" >> "$student_site"
 echo '<hr />' >> "$student_site"
+
+# Directory listing
+echo -n '<pre><code>' >> "$student_site"
+tree -L 2 >> "$student_site"
+echo '</code></pre>' >> "$student_site"
 
 
 #########
@@ -78,7 +84,7 @@ if [ -f "CMakeLists.txt" ]; then
 
 		# Write website
 		echo '<p><span class="text-danger">CMake build failed.</span></p>' >> "$student_site"
-		echo '<pre><code>' >> "$student_site"
+		echo -n '<pre><code>' >> "$student_site"
 		cat cmake_output >> "$student_site"
 		echo '</code></pre>' >> "$student_site"
 		cat "$html_directory/bottom.html" >> "$student_site"
@@ -92,7 +98,7 @@ if [ -f "CMakeLists.txt" ]; then
 
 		# Write website
 		echo '<p><span class="text-danger">make build failed.</span></p>' >> "$student_site"
-		echo '<pre><code>' >> "$student_site"
+		echo -n '<pre><code>' >> "$student_site"
 		cat make_output >> "$student_site"
 		echo '</code></pre>' >> "$student_site"
 		cat "$html_directory/bottom.html" >> "$student_site"
