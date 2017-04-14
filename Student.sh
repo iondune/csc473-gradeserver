@@ -48,30 +48,33 @@ echo > "$student_site"
 cat "$html_directory/top.html" >> "$student_site"
 echo '<h1>[CPE 473] Program 1 Grade Results</h1>' >> "$student_site"
 echo "<p>Student: $student</p>" >> "$student_site"
-echo '<hr />' >> "$student_site"
 
 # Directory listing
+echo '<h2>Directory Structure</h2>' >> "$student_site"
 echo -n '<pre><code>' >> "$student_site"
 tree -L 2 >> "$student_site"
 echo '</code></pre>' >> "$student_site"
+echo '<hr />' >> "$student_site"
 
 
 #########
 # Build #
 #########
 
+mkdir -p "resources/"
+
+# Copy .pov files
+for file in "$inputs_directory/"*.pov
+do
+	echo "Copying file $file"
+	cp "$file" "resources/"
+done
+
+echo '<h2>Build Results</h2>' >> "$student_site"
+
 if [ -f "CMakeLists.txt" ]; then
 
 	echo "Found CMakeLists.txt, doing CMake build"
-
-	mkdir -p "resources/"
-
-	# Copy .pov files
-	for file in "$inputs_directory/"*.pov
-	do
-		echo "Copying file $file"
-		cp "$file" "resources/"
-	done
 
 	mkdir -p "build/"
 	cd "build/"
@@ -106,12 +109,35 @@ if [ -f "CMakeLists.txt" ]; then
 		exit 1
 	fi
 
+elif [ -f "Makefile" ]; then
+
+	echo "Found Makefile, doing Make build"
+
+	make > make_output 2>&1
+	if [ $? -ne 0 ]; then
+		echo "Build failed!"
+
+		# Write website
+		echo '<p><span class="text-danger">make build failed.</span></p>' >> "$student_site"
+		echo -n '<pre><code>' >> "$student_site"
+		cat make_output >> "$student_site"
+		echo '</code></pre>' >> "$student_site"
+		cat "$html_directory/bottom.html" >> "$student_site"
+
+		exit 1
+	fi
+
 else
 
 	echo "Could not build project"
+
+	echo '<p><span class="text-danger">No <code>Makefile</code> or <code>CMakeLists.txt</code> found.</span></p>' >> "$student_site"
+
 	exit 1
 
 fi
+
+echo '<p><span class="text-success">build succeeded.</span></p>' >> "$student_site"
 
 
 #######
@@ -120,6 +146,10 @@ fi
 
 if [ ! -x "raytrace" ]; then
 	echo "No executable called 'raytrace', might be misnamed."
+
+	echo '<p><span class="text-danger">Could not find executable <code>raytrace</code>.</span></p>' >> "$student_site"
+
+	exit 1
 fi
 
 # Run tests
