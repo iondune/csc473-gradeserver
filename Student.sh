@@ -7,6 +7,8 @@
 students_directory="/home/ian/students"
 inputs_directory="/home/ian/csc473-inputfiles"
 tests_directory="/home/ian/csc473-testfiles"
+site_directory="/var/www/html/grades"
+html_directory="/home/ian/csc473-gradeserver/html"
 
 
 ########
@@ -38,6 +40,15 @@ git reset --hard
 
 export GLM_INCLUDE_DIR=/usr/include/glm/
 
+mkdir -p "$site_directory/$student/"
+student_site="$site_directory/$student/index.html"
+
+echo > "$student_site"
+cat "$html_directory/top.html" >> "$student_site"
+echo '<h1>[CPE 473] Program 1 Grade Results</h1>' >> "$student_site"
+echo "<p>Student: $student</p>" >> "$student_site"
+echo '<hr />' >> "$student_site"
+
 
 #########
 # Build #
@@ -64,12 +75,28 @@ if [ -f "CMakeLists.txt" ]; then
 	cmake .. > cmake_output 2>&1
 	if [ $? -ne 0 ]; then
 		echo "CMake failed!"
+
+		# Write website
+		echo '<p><span class="text-danger">CMake build failed.</span></p>' >> "$student_site"
+		echo '<pre><code>' >> "$student_site"
+		cat cmake_output >> "$student_site"
+		echo '</code></pre>' >> "$student_site"
+		cat "$html_directory/bottom.html" >> "$student_site"
+
 		exit 1
 	fi
 
 	make > make_output 2>&1
 	if [ $? -ne 0 ]; then
 		echo "Build failed!"
+
+		# Write website
+		echo '<p><span class="text-danger">make build failed.</span></p>' >> "$student_site"
+		echo '<pre><code>' >> "$student_site"
+		cat make_output >> "$student_site"
+		echo '</code></pre>' >> "$student_site"
+		cat "$html_directory/bottom.html" >> "$student_site"
+
 		exit 1
 	fi
 
