@@ -2,6 +2,10 @@
 
 exec_directory="/home/ian/"
 students_directory="/home/ian/students/"
+site_directory="/var/www/html/grades"
+
+teacher_site="$site_directory/all.html"
+echo > "$teacher_site"
 
 
 cd "$students_directory"
@@ -12,6 +16,7 @@ do
 	student=${directory%/}
 
 	"$exec_directory/Student.sh" "$student"
+	echo "<p><a href=\"$student/\">$student</a></p>" >> "$teacher_site"
 
 	echo
 	echo

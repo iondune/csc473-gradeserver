@@ -52,7 +52,7 @@ echo "<p>Student: $student</p>" >> "$student_site"
 # Directory listing
 echo '<h2>Directory Structure</h2>' >> "$student_site"
 echo -n '<pre><code>' >> "$student_site"
-tree -L 2 >> "$student_site"
+tree >> "$student_site"
 echo '</code></pre>' >> "$student_site"
 echo '<hr />' >> "$student_site"
 
