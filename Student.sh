@@ -65,6 +65,11 @@ if [ -f "CMakeLists.txt" ]; then
 		exit 1
 	fi
 
+else
+
+	echo "Could not build project"
+	exit 1
+
 fi
 
 
@@ -102,6 +107,17 @@ do
 		echo "Imaged not produced for test case!"
 		exit 1
 	fi
+
+	img_diff=$(compare -metric AE -fuzz 3 "$tests_directory/p1/$out_file" "$out_file" difference.png 2>&1)
+	rm difference.png
+
+	echo "Difference: $img_diff"
+	if [[ "$img_diff" -gt 0 ]]; then
+		echo "Image doesn't match!"
+	else
+		echo "Image matches!"
+	fi
+
 done
 
 
