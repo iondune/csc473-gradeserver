@@ -36,6 +36,8 @@ git pull origin master
 git clean -d -x -f
 git reset --hard
 
+export GLM_INCLUDE_DIR=/usr/include/glm/
+
 
 #########
 # Build #
@@ -56,6 +58,8 @@ if [ -f "CMakeLists.txt" ]; then
 
 	mkdir -p "build/"
 	cd "build/"
+
+	rm -f "CMakeCache.txt"
 
 	cmake .. > cmake_output 2>&1
 	if [ $? -ne 0 ]; then
