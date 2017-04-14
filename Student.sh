@@ -33,6 +33,8 @@ fi
 cd "repo/"
 
 git pull origin master
+git clean -d -x -f
+git reset --hard
 
 
 #########
@@ -42,6 +44,8 @@ git pull origin master
 if [ -f "CMakeLists.txt" ]; then
 
 	echo "Found CMakeLists.txt, doing CMake build"
+
+	mkdir -p "resources/"
 
 	# Copy .pov files
 	for file in "$inputs_directory/"*.pov
@@ -53,13 +57,13 @@ if [ -f "CMakeLists.txt" ]; then
 	mkdir -p "build/"
 	cd "build/"
 
-	cmake ..
+	cmake .. 2>&1 > cmake_output
 	if [ $? -ne 0 ]; then
 		echo "CMake failed!"
 		exit 1
 	fi
 
-	make
+	make 2>&1 > make_output
 	if [ $? -ne 0 ]; then
 		echo "Build failed!"
 		exit 1
