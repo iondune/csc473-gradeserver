@@ -38,7 +38,7 @@ git pull origin master
 git clean -d -x -f
 git reset --hard
 
-export GLM_INCLUDE_DIR=/usr/include/glm/
+export GLM_INCLUDE_DIR='/usr/include/glm/'
 
 mkdir -p "$site_directory/$student/"
 student_site="$site_directory/$student/index.html"
@@ -52,10 +52,14 @@ echo "<p>Student: $student</p>" >> "$student_site"
 # Directory listing
 echo '<h2>Directory Structure</h2>' >> "$student_site"
 echo -n '<pre><code>' >> "$student_site"
-tree >> "$student_site"
+tree --filelimit 32 >> "$student_site"
 echo '</code></pre>' >> "$student_site"
 echo '<hr />' >> "$student_site"
 
+
+if [ -d "prog1" ]; then
+	cd "prog1/"
+fi
 
 #########
 # Build #
@@ -97,7 +101,7 @@ if [ -f "CMakeLists.txt" ]; then
 
 	make > make_output 2>&1
 	if [ $? -ne 0 ]; then
-		echo "Build failed!"
+		echo "Makefile build failed!"
 
 		# Write website
 		echo '<p><span class="text-danger">make build failed.</span></p>' >> "$student_site"
@@ -115,7 +119,7 @@ elif [ -f "Makefile" ]; then
 
 	make > make_output 2>&1
 	if [ $? -ne 0 ]; then
-		echo "Build failed!"
+		echo "Makefile build failed!"
 
 		# Write website
 		echo '<p><span class="text-danger">make build failed.</span></p>' >> "$student_site"
@@ -129,11 +133,42 @@ elif [ -f "Makefile" ]; then
 
 else
 
-	echo "Could not build project"
+	build_files=$(find -name "*.cpp")
 
-	echo '<p><span class="text-danger">No <code>Makefile</code> or <code>CMakeLists.txt</code> found.</span></p>' >> "$student_site"
+	if [ ! -z "$build_files" ] ; then
 
-	exit 1
+		g++ $build_files -o raytrace > gcc_output 2>&1
+
+		if [ $? -eq 0 ] ; then
+
+			echo "Built all *.cpp in src/"
+
+		else
+
+			echo "g++ build failed!"
+
+			# Write website
+			echo '<p><span class="text-danger">No <code>Makefile</code> or <code>CMakeLists.txt</code> found.</span></p>' >> "$student_site"
+			echo '<p><span class="text-danger">g++ build failed.</span></p>' >> "$student_site"
+			echo -n '<pre><code>' >> "$student_site"
+			cat gcc_output >> "$student_site"
+			echo '</code></pre>' >> "$student_site"
+			cat "$html_directory/bottom.html" >> "$student_site"
+
+			exit 1
+
+		fi
+
+	else
+
+		echo "Could not find any *.cpp to build"
+
+		echo '<p><span class="text-danger">No <code>Makefile</code> or <code>CMakeLists.txt</code> found.</span></p>' >> "$student_site"
+
+		exit 1
+
+	fi
+
 
 fi
 
@@ -143,6 +178,8 @@ echo '<p><span class="text-success">build succeeded.</span></p>' >> "$student_si
 #######
 # Run #
 #######
+
+echo '<h2>Test Results</h2>' >> "$student_site"
 
 if [ ! -x "raytrace" ]; then
 	echo "No executable called 'raytrace', might be misnamed."
@@ -162,8 +199,10 @@ do
 
 	if [ $? -eq 0 ]; then
 		echo "Test passed!"
+		echo "<p><span class=\"text-success\">Test case $args_file passed.</span></p>" >> "$student_site"
 	else
 		echo "Test failed!"
+		echo "<p><span class=\"text-danger\">Test case $args_file failed.</span></p>" >> "$student_site"
 	fi
 done
 
