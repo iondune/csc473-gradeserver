@@ -26,7 +26,7 @@ cd "$students_directory/$student/"
 
 if [ ! -d "repo" ]; then
 
-	git clone $(< url )
+	git clone $(< url ) "repo"
 
 fi
 
@@ -57,13 +57,13 @@ if [ -f "CMakeLists.txt" ]; then
 	mkdir -p "build/"
 	cd "build/"
 
-	cmake .. 2>&1 > cmake_output
+	cmake .. > cmake_output 2>&1
 	if [ $? -ne 0 ]; then
 		echo "CMake failed!"
 		exit 1
 	fi
 
-	make 2>&1 > make_output
+	make > make_output 2>&1
 	if [ $? -ne 0 ]; then
 		echo "Build failed!"
 		exit 1
@@ -123,8 +123,3 @@ do
 	fi
 
 done
-
-
-echo
-echo
-echo

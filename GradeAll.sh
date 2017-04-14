@@ -13,6 +13,10 @@ do
 
 	"$exec_directory/Student.sh" "$student"
 
+	echo
+	echo
+	echo
+
 	cd "$students_directory"
 
 done
