@@ -52,7 +52,9 @@ function collapse_button()
 
 # Header info
 echo > "$student_site"
-cat "$html_directory/top.html" >> "$student_site"
+cat "$html_directory/top1.html" >> "$student_site"
+echo "<title>Grade Results: $student</title>" >> "$student_site"
+cat "$html_directory/top2.html" >> "$student_site"
 echo '<h1>[CPE 473] Program 1 Grade Results</h1>' >> "$student_site"
 echo "<p>Student: $student</p>" >> "$student_site"
 
@@ -194,6 +196,7 @@ if [ ! -x "raytrace" ]; then
 	echo "No executable called 'raytrace', might be misnamed."
 
 	echo '<p><span class="text-danger">Could not find executable <code>raytrace</code>.</span></p>' >> "$student_site"
+	cat "$html_directory/bottom.html" >> "$student_site"
 
 	exit 1
 fi
@@ -229,19 +232,22 @@ do
 	mv "output.png" "$out_file"
 
 	if [ $? -ne 0 ]; then
-		echo "Imaged not produced for test case!"
-		exit 1
-	fi
-
-	img_diff=$(compare -metric AE -fuzz 3 "$tests_directory/p1/$out_file" "$out_file" difference.png 2>&1)
-	rm difference.png
-
-	echo "Difference: $img_diff"
-	if [[ "$img_diff" -gt 0 ]]; then
-		echo "Image doesn't match!"
+		echo "Image not produced for test case!"
+		echo "<p><span class=\"text-danger\">Test case $file failed - no image produced.</span></p>" >> "$student_site"
 	else
-		echo "Image matches!"
+		img_diff=$(compare -metric AE -fuzz 3 "$tests_directory/p1/$out_file" "$out_file" difference.png 2>&1)
+		rm difference.png
+
+		echo "Difference: $img_diff"
+		if [[ "$img_diff" -gt 0 ]]; then
+			echo "Image doesn't match!"
+			echo "<p><span class=\"text-danger\">Test case $file failed - image does not match.</span></p>" >> "$student_site"
+		else
+			echo "Image matches!"
+			echo "<p><span class=\"text-success\">Test case $file passed - imaged matches.</span></p>" >> "$student_site"
+		fi
 	fi
+
 
 done
 
