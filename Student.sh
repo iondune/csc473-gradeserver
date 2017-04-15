@@ -172,6 +172,7 @@ else
 		echo "Could not find any *.cpp to build"
 
 		echo '<p><span class="text-danger">No <code>Makefile</code> or <code>CMakeLists.txt</code> found.</span></p>' >> "$student_site"
+		cat "$html_directory/bottom.html" >> "$student_site"
 
 		exit 1
 
@@ -201,9 +202,10 @@ fi
 for args_file in "$tests_directory/p1/"*.args
 do
 	out_file="${args_file%.*}.out"
+	test_name=$(basename ${args_file%.*})
 	echo "Running test $args_file $out_file"
 	./raytrace $(< "$args_file") > mytest.out
-	diff "$out_file" mytest.out
+	diff "$out_file" mytest.out > diff_output 2>&1
 
 	if [ $? -eq 0 ]; then
 		echo "Test passed!"
@@ -211,6 +213,11 @@ do
 	else
 		echo "Test failed!"
 		echo "<p><span class=\"text-danger\">Test case $args_file failed.</span></p>" >> "$student_site"
+
+		collapse_button "diff_"$test_name
+		echo -n '<div class="collapse" id="diff_'$test_name'"><pre><code>' >> "$student_site"
+		cat diff_output >> "$student_site"
+		echo '</code></pre></div>' >> "$student_site"
 	fi
 done
 
@@ -237,3 +244,5 @@ do
 	fi
 
 done
+
+cat "$html_directory/bottom.html" >> "$student_site"
