@@ -34,8 +34,8 @@ fi
 
 cd "repo/"
 
-git pull origin master
 git clean -d -x -f
+git pull origin master
 git reset --hard
 
 export GLM_INCLUDE_DIR='/usr/include/glm/'
@@ -147,6 +147,8 @@ elif [ -f "Makefile" ]; then
 
 else
 
+	echo '<p><span class="text-danger">No <code>Makefile</code> or <code>CMakeLists.txt</code> found.</span></p>' >> "$student_site"
+
 	build_files=$(find -name "*.cpp")
 
 	if [ ! -z "$build_files" ] ; then
@@ -162,7 +164,6 @@ else
 			echo "g++ build failed!"
 
 			# Write website
-			echo '<p><span class="text-danger">No <code>Makefile</code> or <code>CMakeLists.txt</code> found.</span></p>' >> "$student_site"
 			echo '<p><span class="text-danger">g++ build failed.</span></p>' >> "$student_site"
 			echo -n '<pre><code>' >> "$student_site"
 			cat gcc_output >> "$student_site"
@@ -177,7 +178,7 @@ else
 
 		echo "Could not find any *.cpp to build"
 
-		echo '<p><span class="text-danger">No <code>Makefile</code> or <code>CMakeLists.txt</code> found.</span></p>' >> "$student_site"
+		echo '<p><span class="text-danger">No source files found to build!</span></p>' >> "$student_site"
 		cat "$html_directory/bottom.html" >> "$student_site"
 
 		exit 1
