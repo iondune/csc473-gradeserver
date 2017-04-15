@@ -80,12 +80,14 @@ fi
 #########
 
 mkdir -p "resources/"
+	mkdir -p "build/"
 
 # Copy .pov files
 for file in "$inputs_directory/"*.pov
 do
 	echo "Copying file $file"
 	cp "$file" "resources/"
+	cp "$file" "build/"
 done
 
 echo '<h2>Build Results</h2>' >> "$student_site"
@@ -94,7 +96,6 @@ if [ -f "CMakeLists.txt" ]; then
 
 	echo "Found CMakeLists.txt, doing CMake build"
 
-	mkdir -p "build/"
 	cd "build/"
 
 	rm -f "CMakeCache.txt"
