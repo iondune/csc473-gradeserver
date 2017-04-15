@@ -53,7 +53,7 @@ function collapse_button()
 # Header info
 echo > "$student_site"
 cat "$html_directory/top1.html" >> "$student_site"
-echo "<title>Grade Results: $student</title>" >> "$student_site"
+echo "<title>[$student] CPE 473 Grade Results</title>" >> "$student_site"
 cat "$html_directory/top2.html" >> "$student_site"
 echo '<h1>[CPE 473] Program 1 Grade Results</h1>' >> "$student_site"
 echo "<p>Student: $student</p>" >> "$student_site"
