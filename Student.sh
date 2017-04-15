@@ -71,6 +71,10 @@ if [ -d "prog1" ]; then
 	cd "prog1/"
 fi
 
+if [ -d "CPE473" ]; then
+	cd "CPE473/"
+fi
+
 #########
 # Build #
 #########
