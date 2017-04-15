@@ -43,6 +43,13 @@ export GLM_INCLUDE_DIR='/usr/include/glm/'
 mkdir -p "$site_directory/$student/"
 student_site="$site_directory/$student/index.html"
 
+function collapse_button()
+{
+	echo '<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#'$1'" aria-expanded="false" aria-controls="'$1'">' >> "$student_site"
+	echo 'Show/Hide' >> "$student_site"
+	echo '</button>' >> "$student_site"
+}
+
 # Header info
 echo > "$student_site"
 cat "$html_directory/top.html" >> "$student_site"
@@ -51,9 +58,10 @@ echo "<p>Student: $student</p>" >> "$student_site"
 
 # Directory listing
 echo '<h2>Directory Structure</h2>' >> "$student_site"
-echo -n '<pre><code>' >> "$student_site"
+collapse_button file_view
+echo -n '<div class="collapse" id="file_view"><pre><code>' >> "$student_site"
 tree --filelimit 32 >> "$student_site"
-echo '</code></pre>' >> "$student_site"
+echo '</code></pre></div>' >> "$student_site"
 echo '<hr />' >> "$student_site"
 
 
