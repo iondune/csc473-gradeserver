@@ -17,7 +17,7 @@ html_directory="/home/ian/csc473-gradeserver/html"
 
 if [ "$#" -ne 1 ]; then
     echo "usage: GradeStudent <user_id>"
-    exit 1
+    exit 99
 fi
 
 student=$1
@@ -197,6 +197,8 @@ echo '<p><span class="text-success">build succeeded.</span></p>' >> "$student_si
 # Run #
 #######
 
+failed_tests=
+
 echo '<h2>Test Results</h2>' >> "$student_site"
 
 if [ ! -x "raytrace" ]; then
@@ -205,7 +207,7 @@ if [ ! -x "raytrace" ]; then
 	echo '<p><span class="text-danger">Could not find executable <code>raytrace</code>.</span></p>' >> "$student_site"
 	cat "$html_directory/bottom.html" >> "$student_site"
 
-	exit 1
+	exit 2
 fi
 
 # Run tests
@@ -221,6 +223,7 @@ do
 		echo "Test passed!"
 		echo "<p><span class=\"text-success\">Test case $args_file passed.</span></p>" >> "$student_site"
 	else
+		failed_tests="${failed_tests}$args_file"
 		echo "Test failed!"
 		echo "<p><span class=\"text-danger\">Test case $args_file failed.</span></p>" >> "$student_site"
 
@@ -239,6 +242,7 @@ do
 	mv "output.png" "$out_file"
 
 	if [ $? -ne 0 ]; then
+		failed_tests="${failed_tests}$file"
 		echo "Image not produced for test case!"
 		echo "<p><span class=\"text-danger\">Test case $file failed - no image produced.</span></p>" >> "$student_site"
 	else
@@ -246,6 +250,7 @@ do
 
 		echo "Difference: $img_diff"
 		if [[ "$img_diff" -gt 0 ]]; then
+			failed_tests="${failed_tests}$file"
 			echo "Image doesn't match!"
 			echo "<p><span class=\"text-danger\">Test case $file failed - image does not match.</span></p>" >> "$student_site"
 		else
@@ -254,7 +259,19 @@ do
 		fi
 	fi
 
-
 done
 
-cat "$html_directory/bottom.html" >> "$student_site"
+if [ -z "$failed_tests" ]; then
+
+	echo "All tests passed!"
+	echo "<p><span class=\"text-success\">All tests passed!</span></p>" >> "$student_site"
+
+	cat "$html_directory/bottom.html" >> "$student_site"
+	exit 0
+
+else
+
+	cat "$html_directory/bottom.html" >> "$student_site"
+	exit 3
+
+fi
