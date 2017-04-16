@@ -57,6 +57,32 @@ function collapse_button()
 	echo '</button>' >> "$student_site"
 }
 
+function modal_window_start()
+{
+	echo '<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#'$1'">' >> "$student_site"
+	echo "$2" >> "$student_site"
+	echo '</button>' >> "$student_site"
+	echo '<div class="modal fade" id="'$1'" tabindex="-1" role="dialog">' >> "$student_site"
+	echo '<div class="modal-dialog" role="document">' >> "$student_site"
+	echo '<div class="modal-content">' >> "$student_site"
+	echo '<div class="modal-header">' >> "$student_site"
+	echo '<button type="button" class="close" data-dismiss="modal" aria-label="Close">&times;</button>' >> "$student_site"
+	echo '<h4 class="modal-title">'$2'</h4>' >> "$student_site"
+	echo '</div>' >> "$student_site"
+	echo '<div class="modal-body">' >> "$student_site"
+}
+
+function modal_window_end()
+{
+	echo '</div>' >> "$student_site"
+	echo '<div class="modal-footer">' >> "$student_site"
+	echo '<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>' >> "$student_site"
+	echo '</div>' >> "$student_site"
+	echo '</div>' >> "$student_site"
+	echo '</div>' >> "$student_site"
+	echo '</div>' >> "$student_site"
+}
+
 # Header info
 echo > "$student_site"
 cat "$html_directory/top1.html" >> "$student_site"
@@ -67,12 +93,11 @@ echo "<p>Student: $student</p>" >> "$student_site"
 echo "<p>Time: "$(TZ=America/Los_Angeles date)"</p>" >> "$student_site"
 
 # Directory listing
-echo '<h2>Directory Structure</h2>' >> "$student_site"
-collapse_button file_view
-echo -n '<div class="collapse" id="file_view"><pre><code>' >> "$student_site"
+modal_window_start "file_view" "Directory Structure"
+echo -n '<pre><code>' >> "$student_site"
 tree --filelimit 32 >> "$student_site"
-echo '</code></pre></div>' >> "$student_site"
-echo '<hr />' >> "$student_site"
+echo '</code></pre>' >> "$student_site"
+modal_window_end
 
 
 if [ -d "prog1" ]; then
