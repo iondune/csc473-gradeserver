@@ -63,6 +63,6 @@ do
 
 done
 
-echo '</tbody>' >> $teacher_site
+echo '</tbody></table>' >> $teacher_site
 
 cat "$html_directory/bottom.html" >> "$teacher_site"

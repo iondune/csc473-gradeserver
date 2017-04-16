@@ -59,7 +59,7 @@ function collapse_button()
 
 function modal_window_start()
 {
-	echo '<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#'$1'">' >> "$student_site"
+	echo '<button type="button" class="btn btn-'$3' btn-sm" data-toggle="modal" data-target="#'$1'">' >> "$student_site"
 	echo "$2" >> "$student_site"
 	echo '</button>' >> "$student_site"
 	echo '<div class="modal fade" id="'$1'" tabindex="-1" role="dialog">' >> "$student_site"
@@ -93,7 +93,7 @@ echo "<p>Student: $student</p>" >> "$student_site"
 echo "<p>Time: "$(TZ=America/Los_Angeles date)"</p>" >> "$student_site"
 
 # Directory listing
-modal_window_start "file_view" "Directory Structure"
+modal_window_start "file_view" "Directory Structure" "primary"
 echo -n '<pre><code>' >> "$student_site"
 tree --filelimit 32 >> "$student_site"
 echo '</code></pre>' >> "$student_site"
@@ -243,29 +243,47 @@ if [ ! -x "raytrace" ]; then
 fi
 
 # Run tests
+
+echo '<table class="table table-striped table-bordered" style="width: auto;">' >> $student_site
+echo '<thead>' >> $student_site
+echo '<tr>' >> $student_site
+echo '<th>Test</th>' >> $student_site
+echo '<th>Status</th>' >> $student_site
+echo '</tr>' >> $student_site
+echo '</thead>' >> $student_site
+echo '<tbody>' >> $student_site
+
 for args_file in "$tests_directory/p1/"*.args
 do
 	out_file="${args_file%.*}.out"
 	test_name=$(basename ${args_file%.*})
+
+	echo '<tr><td>'$test_name'</td><td>' >> $student_site
+
 	echo "Running test $args_file $out_file"
 	{ ./raytrace $(< "$args_file"); } > mytest.out 2>&1
 	diff "$out_file" mytest.out > diff_output 2>&1
 
 	if [ $? -eq 0 ]; then
 		echo "Test passed!"
-		echo "<p><span class=\"text-success\">Test case $args_file passed.</span></p>" >> "$student_site"
+		echo '<span class="label label-success">Passed</span>' >> "$student_site"
 	else
-		failed_tests="${failed_tests}$args_file"
+		failed_tests="${failed_tests}$test_name"
 		echo "Test failed!"
-		echo "<p><span class=\"text-danger\">Test case $args_file failed.</span></p>" >> "$student_site"
 
-		modal_window_start "diff_"$test_name "Diff Results ($test_name)"
+		modal_window_start "diff_"$test_name "Failed - Diff Results ($test_name)" "danger"
 		echo -n '<pre><code>' >> "$student_site"
 		cat diff_output >> "$student_site"
 		echo '</code></pre>' >> "$student_site"
 		modal_window_end
 	fi
+
+	echo '</td></tr>' >> $student_site
+
 done
+
+echo '</tbody></table>' >> $student_site
+echo '<h2>Image Results</h2>' >> "$student_site"
 
 for file in planes.pov simple.pov spheres.pov
 do
@@ -277,7 +295,7 @@ do
 	if [ $? -ne 0 ]; then
 		failed_tests="${failed_tests}$file"
 		echo "Image not produced for test case!"
-		echo "<p><span class=\"text-danger\">Test case $file failed - no image produced.</span></p>" >> "$student_site"
+		echo "<p><span class=\"text-danger\">Image for $file failed - no image produced.</span></p>" >> "$student_site"
 	else
 		img_diff=$(compare -metric AE -fuzz 3 "$tests_directory/p1/$out_file" "$out_file" "difference_$out_file" 2>&1)
 
@@ -285,10 +303,10 @@ do
 		if [[ "$img_diff" -gt 0 ]]; then
 			failed_tests="${failed_tests}$file"
 			echo "Image doesn't match!"
-			echo "<p><span class=\"text-danger\">Test case $file failed - image does not match.</span></p>" >> "$student_site"
+			echo "<p><span class=\"text-danger\">Image for $file failed - image does not match.</span></p>" >> "$student_site"
 		else
 			echo "Image matches!"
-			echo "<p><span class=\"text-success\">Test case $file passed - imaged matches.</span></p>" >> "$student_site"
+			echo "<p><span class=\"text-success\">Image for $file passed - imaged matches.</span></p>" >> "$student_site"
 		fi
 	fi
 
