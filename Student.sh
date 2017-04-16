@@ -58,6 +58,7 @@ echo "<title>[$student] CPE 473 Grade Results</title>" >> "$student_site"
 cat "$html_directory/top2.html" >> "$student_site"
 echo '<h1>[CPE 473] Program 1 Grade Results</h1>' >> "$student_site"
 echo "<p>Student: $student</p>" >> "$student_site"
+echo "<p>Time: "$(TZ=America/Los_Angeles date)"</p>" >> "$student_site"
 
 # Directory listing
 echo '<h2>Directory Structure</h2>' >> "$student_site"
