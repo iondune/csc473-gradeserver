@@ -42,7 +42,13 @@ export GLM_INCLUDE_DIR='/usr/include/glm/'
 export EIGEN3_INCLUDE_DIR='/usr/include/eigen3/'
 
 mkdir -p "$site_directory/$student/"
-student_site="$site_directory/$student/index.html"
+student_site="$site_directory/$student/temp.html"
+
+function cleanup()
+{
+	cat "$html_directory/bottom.html" >> "$student_site"
+	mv "$site_directory/$student/temp.html" "$site_directory/$student/index.html"
+}
 
 function collapse_button()
 {
@@ -111,8 +117,8 @@ if [ -f "CMakeLists.txt" ]; then
 		echo -n '<pre><code>' >> "$student_site"
 		cat cmake_output >> "$student_site"
 		echo '</code></pre>' >> "$student_site"
-		cat "$html_directory/bottom.html" >> "$student_site"
 
+		cleanup
 		exit 1
 	fi
 
@@ -125,8 +131,8 @@ if [ -f "CMakeLists.txt" ]; then
 		echo -n '<pre><code>' >> "$student_site"
 		cat make_output >> "$student_site"
 		echo '</code></pre>' >> "$student_site"
-		cat "$html_directory/bottom.html" >> "$student_site"
 
+		cleanup
 		exit 1
 	fi
 
@@ -143,8 +149,8 @@ elif [ -f "Makefile" ]; then
 		echo -n '<pre><code>' >> "$student_site"
 		cat make_output >> "$student_site"
 		echo '</code></pre>' >> "$student_site"
-		cat "$html_directory/bottom.html" >> "$student_site"
 
+		cleanup
 		exit 1
 	fi
 
@@ -171,8 +177,8 @@ else
 			echo -n '<pre><code>' >> "$student_site"
 			cat gcc_output >> "$student_site"
 			echo '</code></pre>' >> "$student_site"
-			cat "$html_directory/bottom.html" >> "$student_site"
 
+			cleanup
 			exit 1
 
 		fi
@@ -182,8 +188,8 @@ else
 		echo "Could not find any *.cpp to build"
 
 		echo '<p><span class="text-danger">No source files found to build!</span></p>' >> "$student_site"
-		cat "$html_directory/bottom.html" >> "$student_site"
 
+		cleanup
 		exit 1
 
 	fi
@@ -206,8 +212,8 @@ if [ ! -x "raytrace" ]; then
 	echo "No executable called 'raytrace', might be misnamed."
 
 	echo '<p><span class="text-danger">Could not find executable <code>raytrace</code>.</span></p>' >> "$student_site"
-	cat "$html_directory/bottom.html" >> "$student_site"
 
+	cleanup
 	exit 2
 fi
 
@@ -267,12 +273,12 @@ if [ -z "$failed_tests" ]; then
 	echo "All tests passed!"
 	echo "<p><span class=\"text-success\">All tests passed!</span></p>" >> "$student_site"
 
-	cat "$html_directory/bottom.html" >> "$student_site"
+	cleanup
 	exit 0
 
 else
 
-	cat "$html_directory/bottom.html" >> "$student_site"
+	cleanup
 	exit 3
 
 fi
