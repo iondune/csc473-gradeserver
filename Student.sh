@@ -223,7 +223,7 @@ do
 	out_file="${args_file%.*}.out"
 	test_name=$(basename ${args_file%.*})
 	echo "Running test $args_file $out_file"
-	./raytrace $(< "$args_file") > mytest.out
+	{ ./raytrace $(< "$args_file"); } > mytest.out 2>&1
 	diff "$out_file" mytest.out > diff_output 2>&1
 
 	if [ $? -eq 0 ]; then
@@ -245,7 +245,7 @@ for file in planes.pov simple.pov spheres.pov
 do
 	out_file="${file%.*}.png"
 	echo "Rendering image $file -> $out_file"
-	./raytrace render "$file" 640 480
+	{ ./raytrace render "$file" 640 480; } > render.out 2>&1
 	mv "output.png" "$out_file"
 
 	if [ $? -ne 0 ]; then
