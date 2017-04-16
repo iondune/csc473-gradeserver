@@ -241,8 +241,7 @@ do
 		echo "Image not produced for test case!"
 		echo "<p><span class=\"text-danger\">Test case $file failed - no image produced.</span></p>" >> "$student_site"
 	else
-		img_diff=$(compare -metric AE -fuzz 3 "$tests_directory/p1/$out_file" "$out_file" difference.png 2>&1)
-		rm difference.png
+		img_diff=$(compare -metric AE -fuzz 3 "$tests_directory/p1/$out_file" "$out_file" "difference_$out_file" 2>&1)
 
 		echo "Difference: $img_diff"
 		if [[ "$img_diff" -gt 0 ]]; then

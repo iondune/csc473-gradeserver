@@ -1,12 +1,19 @@
 #! /bin/bash
 
-exec_directory="/home/ian/"
-students_directory="/home/ian/students/"
+exec_directory="/home/ian"
+students_directory="/home/ian/students"
 site_directory="/var/www/html/grades"
 
 teacher_site="$site_directory/all.html"
 echo > "$teacher_site"
 
+cd "$exec_directory/csc473-inputfiles"
+git pull
+cd "$exec_directory/csc473-testfiles"
+git pull
+echo
+echo
+echo
 
 cd "$students_directory"
 
