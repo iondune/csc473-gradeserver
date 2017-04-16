@@ -35,8 +35,8 @@ fi
 cd "repo/"
 
 git clean -d -x -f
-git pull origin master
 git reset --hard
+git pull origin master
 
 export GLM_INCLUDE_DIR='/usr/include/glm/'
 export EIGEN3_INCLUDE_DIR='/usr/include/eigen3/'
