@@ -300,10 +300,14 @@ do
 		img_diff=$(compare -metric AE -fuzz 3 "$tests_directory/p1/$out_file" "$out_file" "difference_$out_file" 2>&1)
 
 		echo "Difference: $img_diff"
-		if [[ "$img_diff" -gt 0 ]]; then
+		if [[ "$img_diff" -gt 1000 ]]; then
 			failed_tests="${failed_tests}$file"
 			echo "Image doesn't match!"
 			echo "<p><span class=\"text-danger\">Image for $file failed - image does not match.</span></p>" >> "$student_site"
+		elif [[ "$img_diff" -gt 0 ]]; then
+			echo "Image nearly matches!"
+			echo "<p><span class=\"text-success\">Image for $file passed - imaged matches.</span></p>" >> "$student_site"
+			echo "<p><span class=\"text-warning\">(Found $img_diff pixel differences - up to 1000 are allowed)</span></p>" >> "$student_site"
 		else
 			echo "Image matches!"
 			echo "<p><span class=\"text-success\">Image for $file passed - imaged matches.</span></p>" >> "$student_site"
