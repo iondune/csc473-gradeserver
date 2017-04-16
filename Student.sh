@@ -262,7 +262,7 @@ do
 
 	echo "Running test $args_file $out_file"
 	{ ./raytrace $(< "$args_file"); } > mytest.out 2>&1
-	diff "$out_file" mytest.out > diff_output 2>&1
+	diff -bB "$out_file" mytest.out > diff_output 2>&1
 
 	if [ $? -eq 0 ]; then
 		echo "Test passed!"
