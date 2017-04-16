@@ -23,6 +23,15 @@ echo
 
 cd "$students_directory"
 
+echo '<table class="table table-striped">' >> $teacher_site
+echo '<thead>' >> $teacher_site
+echo '<tr>' >> $teacher_site
+echo '<th>Student</th>' >> $teacher_site
+echo '<th>Status</th>' >> $teacher_site
+echo '</tr>' >> $teacher_site
+echo '</thead>' >> $teacher_site
+echo '<tbody>' >> $teacher_site
+
 for directory in */
 do
 
@@ -31,8 +40,10 @@ do
 	"$exec_directory/Student.sh" "$student"
 	result=$?
 
-	echo "<p>" >> "$teacher_site"
-	echo "<a href=\"$student/\">$student</a>" >> "$teacher_site"
+
+
+	echo "<tr><td>" >> "$teacher_site"
+	echo "<a href=\"$student/\">$student</a></td><td>" >> "$teacher_site"
 	if [ $result -eq 0 ]; then
 		echo "<span class=\"label label-success\">Passing</span>" >> "$teacher_site"
 	elif [ $result -eq 1 ]; then
@@ -42,7 +53,7 @@ do
 	elif [ $result -eq 3 ]; then
 		echo "<span class=\"label label-warning\">Test Failure</span>" >> "$teacher_site"
 	fi
-	echo "</p>" >> "$teacher_site"
+	echo "</td></tr>" >> "$teacher_site"
 
 	echo
 	echo
@@ -51,5 +62,7 @@ do
 	cd "$students_directory"
 
 done
+
+echo '</tbody>' >> $teacher_site
 
 cat "$html_directory/bottom.html" >> "$teacher_site"
