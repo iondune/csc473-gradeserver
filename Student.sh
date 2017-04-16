@@ -42,7 +42,8 @@ export GLM_INCLUDE_DIR='/usr/include/glm/'
 export EIGEN3_INCLUDE_DIR='/usr/include/eigen3/'
 
 mkdir -p "$site_directory/$student/"
-student_site="$site_directory/$student/temp.html"
+student_html_directory="$site_directory/$student"
+student_site="$student_html_directory/temp.html"
 
 function cleanup()
 {
@@ -287,6 +288,7 @@ echo '<h2>Image Results</h2>' >> "$student_site"
 
 for file in planes.pov simple.pov spheres.pov
 do
+	test_name="${file%.*}"
 	out_file="${file%.*}.png"
 	echo "Rendering image $file -> $out_file"
 	{ ./raytrace render "$file" 640 480; } > render.out 2>&1
@@ -312,6 +314,30 @@ do
 			echo "Image matches!"
 			echo "<p><span class=\"text-success\">Image for $file passed - imaged matches.</span></p>" >> "$student_site"
 		fi
+
+		cp "$tests_directory/p1/$out_file" "$student_html_directory/$out_file"
+		cp "$out_file" "$student_html_directory/${student}_$out_file"
+		cp "difference_$out_file" "$student_html_directory/"
+
+		echo '<div class="btn-group" data-toggle="buttons">' >> $student_site
+		echo "<label class=\"btn btn-primary image-toggler\" data-test-name=\"${test_name}\" data-image-number=\"1\">" >> $student_site
+		echo '<input type="radio" name="options" id="option1"> Rendered' >> $student_site
+		echo "</label>" >> $student_site
+		echo "<label class=\"btn btn-primary image-toggler\" data-test-name=\"${test_name}\" data-image-number=\"2\">" >> $student_site
+		echo '<input type="radio" name="options" id="option2"> Expected' >> $student_site
+		echo "</label>" >> $student_site
+		echo "<label class=\"btn btn-primary image-toggler\" data-test-name=\"${test_name}\" data-image-number=\"3\">" >> $student_site
+		echo '<input type="radio" name="options" id="option3"> Difference' >> $student_site
+		echo "</label>" >> $student_site
+		echo "</div>" >> $student_site
+
+		echo "<div>" >> $student_site
+		echo "<img src=\"${student}_$out_file\"  alt=\"rendered\"   id=\"${test_name}_image1\" class=\"image-toggle\" />" >> $student_site
+		echo "<img src=\"$out_file\"             alt=\"expected\"   id=\"${test_name}_image2\" class=\"image-toggle\" style=\"display:none;\" />" >> $student_site
+		echo "<img src=\"difference_$out_file\"  alt=\"difference\" id=\"${test_name}_image3\" class=\"image-toggle\" style=\"display:none;\" />" >> $student_site
+		echo "</div>" >> $student_site
+
+		echo '<hr />' >> $student_site
 	fi
 
 done
