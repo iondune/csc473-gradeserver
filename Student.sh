@@ -39,6 +39,7 @@ git pull origin master
 git reset --hard
 
 export GLM_INCLUDE_DIR='/usr/include/glm/'
+export EIGEN3_INCLUDE_DIR='/usr/include/eigen3/'
 
 mkdir -p "$site_directory/$student/"
 student_site="$site_directory/$student/index.html"
