@@ -59,7 +59,7 @@ function collapse_button()
 
 function modal_window_start()
 {
-	echo '<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#'$1'">' >> "$student_site"
+	echo '<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#'$1'">' >> "$student_site"
 	echo "$2" >> "$student_site"
 	echo '</button>' >> "$student_site"
 	echo '<div class="modal fade" id="'$1'" tabindex="-1" role="dialog">' >> "$student_site"
@@ -259,10 +259,11 @@ do
 		echo "Test failed!"
 		echo "<p><span class=\"text-danger\">Test case $args_file failed.</span></p>" >> "$student_site"
 
-		collapse_button "diff_"$test_name
-		echo -n '<div class="collapse" id="diff_'$test_name'"><pre><code>' >> "$student_site"
+		modal_window_start "diff_"$test_name "Diff Results ($test_name)"
+		echo -n '<pre><code>' >> "$student_site"
 		cat diff_output >> "$student_site"
-		echo '</code></pre></div>' >> "$student_site"
+		echo '</code></pre>' >> "$student_site"
+		modal_window_end
 	fi
 done
 
