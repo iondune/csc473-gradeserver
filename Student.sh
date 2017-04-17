@@ -162,7 +162,7 @@ if [ -f "CMakeLists.txt" ]; then
 		exit 1
 	fi
 
-elif [ -f "Makefile" ]; then
+elif [[ -f "Makefile" || -f "makefile" ]]; then
 
 	echo "Found Makefile, doing Make build"
 
