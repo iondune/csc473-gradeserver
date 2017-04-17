@@ -114,7 +114,8 @@ fi
 #########
 
 mkdir -p "resources/"
-	mkdir -p "build/"
+mkdir -p "build/"
+mkdir -p "build/resources/"
 
 # Copy .pov files
 for file in "$inputs_directory/"*.pov
@@ -122,6 +123,7 @@ do
 	echo "Copying file $file"
 	cp "$file" "resources/"
 	cp "$file" "build/"
+	cp "$file" "build/resources/"
 done
 
 echo '<h2>Build Results</h2>' >> "$student_site"
