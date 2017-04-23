@@ -28,6 +28,7 @@ echo '<thead>' >> $teacher_site
 echo '<tr>' >> $teacher_site
 echo '<th>Student</th>' >> $teacher_site
 echo '<th>Status</th>' >> $teacher_site
+echo '<th>Repo Link</th>' >> $teacher_site
 echo '</tr>' >> $teacher_site
 echo '</thead>' >> $teacher_site
 echo '<tbody>' >> $teacher_site
@@ -52,6 +53,14 @@ do
 		echo "<span class=\"label label-danger\">Missing Program</span>" >> "$teacher_site"
 	elif [ $result -eq 3 ]; then
 		echo "<span class=\"label label-warning\">Test Failure</span>" >> "$teacher_site"
+	fi
+	echo "</td><td>" >> "$teacher_site"
+
+	cd "${students_directory}/${student}"
+	if [ -f "link" ]; then
+		echo -n "<a href=\"" $(< link ) "\">Repo</a>" >> "$teacher_site"
+	else
+		echo '<span class="text-danger">No repo link</span>' >> "$teacher_site"
 	fi
 	echo "</td></tr>" >> "$teacher_site"
 
