@@ -304,11 +304,14 @@ do
 		img_diff=$(compare -metric AE -fuzz 3 "$tests_directory/p1/$out_file" "$out_file" "difference_$out_file" 2>&1)
 
 		echo "Difference: $img_diff"
+		button_class="success"
 		if [[ "$img_diff" -gt 1000 ]]; then
 			failed_tests="${failed_tests}$file"
+			button_class="danger"
 			echo "Image doesn't match!"
 			echo "<p><span class=\"text-danger\">Image for $file failed - image does not match.</span></p>" >> "$student_site"
 		elif [[ "$img_diff" -gt 0 ]]; then
+			button_class="warning"
 			echo "Image nearly matches!"
 			echo "<p><span class=\"text-success\">Image for $file passed - imaged matches.</span></p>" >> "$student_site"
 			echo "<p><span class=\"text-warning\">(Found $img_diff pixel differences - up to 1000 are allowed)</span></p>" >> "$student_site"
@@ -320,6 +323,8 @@ do
 		cp "$tests_directory/p1/$out_file" "$student_html_directory/$out_file"
 		cp "$out_file" "$student_html_directory/${student}_$out_file"
 		cp "difference_$out_file" "$student_html_directory/"
+
+		modal_window_start "image_"$test_name "Image Comparison ($test_name)" "$button_class"
 
 		echo '<div class="btn-group" data-toggle="buttons">' >> $student_site
 		echo "<label class=\"btn btn-primary image-toggler\" data-test-name=\"${test_name}\" data-image-number=\"1\">" >> $student_site
@@ -338,6 +343,8 @@ do
 		echo "<img src=\"$out_file\"             alt=\"expected\"   id=\"${test_name}_image2\" class=\"image-toggle\" style=\"display:none;\" />" >> $student_site
 		echo "<img src=\"difference_$out_file\"  alt=\"difference\" id=\"${test_name}_image3\" class=\"image-toggle\" style=\"display:none;\" />" >> $student_site
 		echo "</div>" >> $student_site
+
+		modal_window_end
 
 		echo '<hr />' >> $student_site
 	fi
