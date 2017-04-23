@@ -3,6 +3,16 @@
 (
 	flock -x -w 10 200 || exit 1
 
+
+echo "##########################################################################################################################"
+echo
+echo "Running Grader!"
+echo -n "Time is: "
+TZ=America/Los_Angeles date
+echo
+echo
+
+
 exec_directory="/home/ian"
 students_directory="/home/ian/students"
 site_directory="/var/www/html/grades"
