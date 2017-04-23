@@ -53,14 +53,14 @@ git pull origin master
 export GLM_INCLUDE_DIR='/usr/include/glm/'
 export EIGEN3_INCLUDE_DIR='/usr/include/eigen3/'
 
-mkdir -p "$site_directory/$student/"
-student_html_directory="$site_directory/$student"
-student_site="$student_html_directory/temp.html"
+student_html_directory="${site_directory}/${student}/${assignment}/"
+student_site="${student_html_directory}/temp.html"
+mkdir -p "${student_html_directory}/"
 
 function cleanup()
 {
 	cat "$html_directory/bottom.html" >> "$student_site"
-	mv "$site_directory/$student/temp.html" "$site_directory/$student/index.html"
+	mv "${student_html_directory}/temp.html" "${student_html_directory}/index.html"
 }
 
 function collapse_button()
@@ -104,6 +104,7 @@ cat "$html_directory/top2.html" >> "$student_site"
 echo '<h1>[CPE 473] Program 1 Grade Results</h1>' >> "$student_site"
 echo "<p>Student: $student</p>" >> "$student_site"
 echo "<p>Time: "$(TZ=America/Los_Angeles date)"</p>" >> "$student_site"
+echo "<p><a href=\"../\">&lt;&lt; Back to All Grades</a></p>" >> "$student_site"
 
 # Directory listing
 modal_window_start "file_view" "Directory Structure" "primary"
