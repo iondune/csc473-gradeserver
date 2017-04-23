@@ -48,7 +48,19 @@ cd "repo/"
 
 git clean -d -x -f
 git reset --hard
-git pull origin master
+git fetch origin master
+git checkout master
+echo "Tags:"
+git tag -l
+echo
+
+if git rev-parse "$assignment" >/dev/null 2>&1
+then
+	echo "Found tag ${assignment}"
+	git checkout "tags/${assignment}"
+else
+	echo "Tag ${assignment} not found, building master instead"
+fi
 
 export GLM_INCLUDE_DIR='/usr/include/glm/'
 export EIGEN3_INCLUDE_DIR='/usr/include/eigen3/'
