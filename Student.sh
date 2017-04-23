@@ -256,10 +256,10 @@ echo '</tr>' >> $student_site
 echo '</thead>' >> $student_site
 echo '<tbody>' >> $student_site
 
-for args_file in "$tests_directory/p1/"*.args
+for test_name in $(< "$tests_directory/p1/files.txt")
 do
-	out_file="${args_file%.*}.out"
-	test_name=$(basename ${args_file%.*})
+	args_file="${tests_directory}/p1/${test_name}.args"
+	out_file="${tests_directory}/p1/${test_name}.out"
 
 	echo '<tr><td>'$test_name'</td><td>' >> $student_site
 
@@ -288,36 +288,38 @@ done
 echo '</tbody></table>' >> $student_site
 echo '<h2>Image Results</h2>' >> "$student_site"
 
-for file in planes.pov simple.pov spheres.pov
+for test_name in $(< "$tests_directory/p1/images.txt")
 do
-	test_name="${file%.*}"
-	out_file="${file%.*}.png"
-	echo "Rendering image $file -> $out_file"
-	{ ./raytrace render "$file" 640 480; } > render.out 2>&1
+	pov_file="${inputs_directory}/${test_name}.pov"
+	out_file="${test_name}.png"
+
+	echo "Rendering image ${test_name}.pov -> $out_file"
+	echo "Path is $pov_file"
+	{ ./raytrace render "$pov_file" 640 480; } > render.out 2>&1
 	mv "output.png" "$out_file"
 
 	if [ $? -ne 0 ]; then
-		failed_tests="${failed_tests}$file"
+		failed_tests="${failed_tests}$test_name"
 		echo "Image not produced for test case!"
-		echo "<p><span class=\"text-danger\">Image for $file failed - no image produced.</span></p>" >> "$student_site"
+		echo "<p><span class=\"text-danger\">Image for $test_name failed - no image produced.</span></p>" >> "$student_site"
 	else
 		img_diff=$(compare -metric AE -fuzz 3 "$tests_directory/p1/$out_file" "$out_file" "difference_$out_file" 2>&1)
 
 		echo "Difference: $img_diff"
 		button_class="success"
 		if [[ "$img_diff" -gt 1000 ]]; then
-			failed_tests="${failed_tests}$file"
+			failed_tests="${failed_tests}$test_name"
 			button_class="danger"
 			echo "Image doesn't match!"
-			echo "<p><span class=\"text-danger\">Image for $file failed - image does not match.</span></p>" >> "$student_site"
+			echo "<p><span class=\"text-danger\">Image for ${test_name}.pov failed - image does not match.</span></p>" >> "$student_site"
 		elif [[ "$img_diff" -gt 0 ]]; then
 			button_class="warning"
 			echo "Image nearly matches!"
-			echo "<p><span class=\"text-success\">Image for $file passed - imaged matches.</span></p>" >> "$student_site"
+			echo "<p><span class=\"text-success\">Image for ${test_name}.pov passed - imaged matches.</span></p>" >> "$student_site"
 			echo "<p><span class=\"text-warning\">(Found $img_diff pixel differences - up to 1000 are allowed)</span></p>" >> "$student_site"
 		else
 			echo "Image matches!"
-			echo "<p><span class=\"text-success\">Image for $file passed - imaged matches.</span></p>" >> "$student_site"
+			echo "<p><span class=\"text-success\">Image for ${test_name}.pov passed - imaged matches.</span></p>" >> "$student_site"
 		fi
 
 		cp "$tests_directory/p1/$out_file" "$student_html_directory/$out_file"
