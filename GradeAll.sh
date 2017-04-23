@@ -1,5 +1,8 @@
 #! /bin/bash
 
+(
+	flock -x -w 10 200 || exit 1
+
 exec_directory="/home/ian"
 students_directory="/home/ian/students"
 site_directory="/var/www/html/grades"
@@ -110,3 +113,5 @@ done
 echo '</tbody></table>' >> $teacher_site
 
 cat "$html_directory/bottom.html" >> "$teacher_site"
+
+) 200>/var/lock/.myscript.exclusivelock
