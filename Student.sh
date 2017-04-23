@@ -383,6 +383,26 @@ if [ -z "$failed_tests" ]; then
 	echo "All tests passed!"
 	echo "<p><span class=\"text-success\">All tests passed!</span></p>" >> "$student_site"
 
+	passfile="${students_directory}/${student}/${assignment}_passed"
+	if [ -f "$passfile" ]; then
+		echo "Already passed!"
+		cat "$passfile"
+
+		echo "<p><span>Already Passed! Pass Info:</span></p>" >> "$student_site"
+
+	else
+		touch "$passfile"
+		TZ=America/Los_Angeles date >> "$passfile"
+		echo >> "$passfile"
+		git log -n 1 HEAD >> "$passfile"
+
+		echo "<p><span>Pass Info:</span></p>" >> "$student_site"
+	fi
+
+	echo -n '<pre><code>' >> "$student_site"
+	cat "$passfile" >> "$student_site"
+	echo '</code></pre>' >> "$student_site"
+
 	cleanup
 	exit 0
 
