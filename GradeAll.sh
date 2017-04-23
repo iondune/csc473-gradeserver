@@ -38,7 +38,7 @@ do
 
 	student=${directory%/}
 
-	"$exec_directory/Student.sh" "$student"
+	"$exec_directory/Student.sh" "$student" "p1"
 	result=$?
 
 

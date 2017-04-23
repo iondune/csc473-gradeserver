@@ -1,12 +1,25 @@
 #! /bin/bash
 
+#############
+# Arguments #
+#############
+
+if [ "$#" -ne 2 ]; then
+	echo "usage: Student.sh <user_id> <assignment>"
+	exit 99
+fi
+
+student=$1
+assignment=$2
+
+
 #########
 # Paths #
 #########
 
 students_directory="/home/ian/students"
 inputs_directory="/home/ian/csc473-inputfiles"
-tests_directory="/home/ian/csc473-testfiles"
+tests_directory="/home/ian/csc473-testfiles/${assignment}"
 site_directory="/var/www/html/grades"
 html_directory="/home/ian/csc473-gradeserver/html"
 
@@ -15,12 +28,11 @@ html_directory="/home/ian/csc473-gradeserver/html"
 # Init #
 ########
 
-if [ "$#" -ne 1 ]; then
-    echo "usage: GradeStudent <user_id>"
-    exit 99
+if [ "$#" -ne 2 ]; then
+	echo "usage: GradeStudent <user_id>"
+	exit 99
 fi
 
-student=$1
 
 echo "Student: $student"
 cd "$students_directory/$student/"
@@ -256,10 +268,10 @@ echo '</tr>' >> $student_site
 echo '</thead>' >> $student_site
 echo '<tbody>' >> $student_site
 
-for test_name in $(< "$tests_directory/p1/files.txt")
+for test_name in $(< "$tests_directory/files.txt")
 do
-	args_file="${tests_directory}/p1/${test_name}.args"
-	out_file="${tests_directory}/p1/${test_name}.out"
+	args_file="${tests_directory}/${test_name}.args"
+	out_file="${tests_directory}/${test_name}.out"
 
 	echo '<tr><td>'$test_name'</td><td>' >> $student_site
 
@@ -288,7 +300,7 @@ done
 echo '</tbody></table>' >> $student_site
 echo '<h2>Image Results</h2>' >> "$student_site"
 
-for test_name in $(< "$tests_directory/p1/images.txt")
+for test_name in $(< "$tests_directory/images.txt")
 do
 	pov_file="${inputs_directory}/${test_name}.pov"
 	out_file="${test_name}.png"
@@ -303,7 +315,7 @@ do
 		echo "Image not produced for test case!"
 		echo "<p><span class=\"text-danger\">Image for $test_name failed - no image produced.</span></p>" >> "$student_site"
 	else
-		img_diff=$(compare -metric AE -fuzz 3 "$tests_directory/p1/$out_file" "$out_file" "difference_$out_file" 2>&1)
+		img_diff=$(compare -metric AE -fuzz 3 "$tests_directory/$out_file" "$out_file" "difference_$out_file" 2>&1)
 
 		echo "Difference: $img_diff"
 		button_class="success"
@@ -322,7 +334,7 @@ do
 			echo "<p><span class=\"text-success\">Image for ${test_name}.pov passed - imaged matches.</span></p>" >> "$student_site"
 		fi
 
-		cp "$tests_directory/p1/$out_file" "$student_html_directory/$out_file"
+		cp "$tests_directory/$out_file" "$student_html_directory/$out_file"
 		cp "$out_file" "$student_html_directory/${student}_$out_file"
 		cp "difference_$out_file" "$student_html_directory/"
 
