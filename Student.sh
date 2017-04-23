@@ -308,13 +308,19 @@ do
 
 	echo "Rendering image ${test_name}.pov -> $out_file"
 	echo "Path is $pov_file"
-	{ ./raytrace render "$pov_file" 640 480; } > render.out 2>&1
+	{ ./raytrace render "$pov_file" 640 480; } > render_output 2>&1
 	mv "output.png" "$out_file"
 
 	if [ $? -ne 0 ]; then
 		failed_tests="${failed_tests}$test_name"
 		echo "Image not produced for test case!"
 		echo "<p><span class=\"text-danger\">Image for $test_name failed - no image produced.</span></p>" >> "$student_site"
+
+		modal_window_start "output_"$test_name "Program Output (${test_name}.pov)" "danger"
+		echo -n '<pre><code>' >> "$student_site"
+		cat render_output >> "$student_site"
+		echo '</code></pre>' >> "$student_site"
+		modal_window_end
 	else
 		img_diff=$(compare -metric AE -fuzz 3 "$tests_directory/$out_file" "$out_file" "difference_$out_file" 2>&1)
 
@@ -339,7 +345,7 @@ do
 		cp "$out_file" "$student_html_directory/${student}_$out_file"
 		cp "difference_$out_file" "$student_html_directory/"
 
-		modal_window_start "image_"$test_name "Image Comparison ($test_name)" "$button_class"
+		modal_window_start "image_"$test_name "Image Comparison (${test_name}.pov)" "$button_class"
 
 		echo '<div class="btn-group" data-toggle="buttons">' >> $student_site
 		echo "<label class=\"btn btn-primary image-toggler\" data-test-name=\"${test_name}\" data-image-number=\"1\">" >> $student_site
@@ -359,6 +365,12 @@ do
 		echo "<img src=\"difference_$out_file\"  alt=\"difference\" id=\"${test_name}_image3\" class=\"image-toggle\" style=\"display:none;\" />" >> $student_site
 		echo "</div>" >> $student_site
 
+		modal_window_end
+
+		modal_window_start "output_"$test_name "Program Output (${test_name}.pov)" "$button_class"
+		echo -n '<pre><code>' >> "$student_site"
+		cat render_output >> "$student_site"
+		echo '</code></pre>' >> "$student_site"
 		modal_window_end
 
 		echo '<hr />' >> $student_site
