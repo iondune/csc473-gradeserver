@@ -49,7 +49,7 @@ cd "repo/"
 git clean -d -x -f
 git reset --hard
 git fetch origin master
-git checkout master
+git pull
 echo "Tags:"
 git tag -l
 echo
@@ -115,7 +115,7 @@ echo "<title>[$student] CPE 473 Grade Results</title>" >> "$student_site"
 cat "$html_directory/top2.html" >> "$student_site"
 echo '<h1>[CPE 473] Program 1 Grade Results</h1>' >> "$student_site"
 echo "<p>Student: $student</p>" >> "$student_site"
-echo "<p>Time: "$(TZ=America/Los_Angeles date)"</p>" >> "$student_site"
+echo "<p>Last Run: "$(TZ=America/Los_Angeles date)"</p>" >> "$student_site"
 echo "<p><a href=\"../\">&lt;&lt; Back to All Grades</a></p>" >> "$student_site"
 
 # Directory listing
@@ -311,7 +311,7 @@ do
 done
 
 echo '</tbody></table>' >> $student_site
-echo '<h2>Image Results</h2>' >> "$student_site"
+echo '<h2>Image Tests</h2>' >> "$student_site"
 
 for test_name in $(< "$tests_directory/images.txt")
 do
@@ -389,6 +389,65 @@ do
 	fi
 
 done
+
+echo '<h2>Rendered Images</h2>' >> "$student_site"
+
+if [ -f "$tests_directory/extra.txt" ]; then
+	for test_name in $(< "$tests_directory/extra.txt")
+	do
+		pov_file="${inputs_directory}/${test_name}.pov"
+		args_file="${tests_directory}/${test_name}.args"
+		out_file="extra_${test_name}.png"
+
+		echo "Rendering image ${test_name}.pov -> $out_file"
+		echo "Path is $pov_file"
+		echo "Command is ./raytrace render $pov_file 640 480" $(< "$args_file")
+		{ ./raytrace render "$pov_file" 640 480 $(< "$args_file"); } > render_output 2>&1
+		mv "output.png" "$out_file"
+
+
+		echo "<h3>${test_name}.pov</h3>" >> "$student_site"
+
+		if [ -f "$args_file" ]; then
+
+			echo "<p>" >> "$student_site"
+			echo "Arguments:" >> "$student_site"
+			echo "</p>" >> "$student_site"
+			echo -n '<p><code>' >> "$student_site"
+			cat "$args_file" >> "$student_site"
+			echo '</code></p>' >> "$student_site"
+		fi
+
+		if [ $? -ne 0 ]; then
+			failed_tests="${failed_tests}$test_name"
+			echo "Image not produced for test case!"
+			echo "<p><span class=\"text-danger\">Image for $test_name failed - no image produced.</span></p>" >> "$student_site"
+
+			modal_window_start "output_"$test_name "Program Output (Render ${test_name}.pov)" "danger"
+			echo -n '<pre><code>' >> "$student_site"
+			cat render_output >> "$student_site"
+			echo '</code></pre>' >> "$student_site"
+			modal_window_end
+		else
+			cp "$out_file" "$student_html_directory/$out_file"
+
+			echo "<p>" >> $student_site
+			echo "<img src=\"$out_file\"             alt=\"extra\"   id=\"${test_name}_extraimage\" class=\"image-toggle\" />" >> $student_site
+			echo "</p>" >> $student_site
+
+			echo "<p>" >> $student_site
+			modal_window_start "output_"$test_name "Program Output (Render ${test_name}.pov)" "$button_class"
+			echo -n '<pre><code>' >> "$student_site"
+			cat render_output >> "$student_site"
+			echo '</code></pre>' >> "$student_site"
+			modal_window_end
+			echo "</p>" >> $student_site
+
+			echo '<hr />' >> $student_site
+		fi
+
+	done
+fi
 
 if [ -z "$failed_tests" ]; then
 
