@@ -390,9 +390,10 @@ do
 
 done
 
-echo '<h2>Rendered Images</h2>' >> "$student_site"
-
 if [ -f "$tests_directory/extra.txt" ]; then
+
+	echo '<h2>Rendered Images</h2>' >> "$student_site"
+
 	for test_name in $(< "$tests_directory/extra.txt")
 	do
 		pov_file="${inputs_directory}/${test_name}.pov"
