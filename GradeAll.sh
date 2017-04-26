@@ -41,7 +41,9 @@ echo '<table class="table table-striped">' >> $teacher_site
 echo '<thead>' >> $teacher_site
 echo '<tr>' >> $teacher_site
 echo '<th>Student</th>' >> $teacher_site
-echo '<th>p1</th>' >> $teacher_site
+for assignment in p1 p2; do
+	echo "<th>${assignment}</th>" >> $teacher_site
+done
 echo '<th>Repo Link</th>' >> $teacher_site
 echo '</tr>' >> $teacher_site
 echo '</thead>' >> $teacher_site
@@ -71,17 +73,19 @@ do
 	echo '<tbody>' >> $student_site
 
 	echo "<tr><td>" >> "$teacher_site"
-	echo "<tr><td>" >> $student_site
+	echo "<a href=\"$student/\">$student</a>" >> "$teacher_site"
+	echo "</td><td>" >> "$teacher_site"
 
-	for assignment in p1
+
+	for assignment in p1 p2
 	do
 
-		"$exec_directory/Student.sh" "$student" "p1"
+		"$exec_directory/Student.sh" "$student" "$assignment"
 		result=$?
 
+		echo "<tr><td>" >> $student_site
 
-		echo "<a href=\"$student/\">$student</a></td><td>" >> "$teacher_site"
-		echo "<a href=\"p1/\">p1</a></td><td>" >> $student_site
+		echo "<a href=\"${assignment}/\">${assignment}</a></td><td>" >> $student_site
 		if [ $result -eq 0 ]; then
 			echo "<span class=\"label label-success\">Passing</span>" >> "$teacher_site"
 			echo "<span class=\"label label-success\">Passing</span>" >> $student_site
@@ -96,6 +100,7 @@ do
 			echo "<span class=\"label label-warning\">Test Failure</span>" >> $student_site
 		fi
 		echo "</td><td>" >> "$teacher_site"
+		echo "</td></tr>" >> $student_site
 
 	done
 
@@ -106,7 +111,6 @@ do
 		echo '<span class="text-danger">No repo link</span>' >> "$teacher_site"
 	fi
 	echo "</td></tr>" >> "$teacher_site"
-	echo "</td></tr>" >> $student_site
 	echo '</tbody></table>' >> $student_site
 	cat "$html_directory/bottom.html" >> $student_site
 
