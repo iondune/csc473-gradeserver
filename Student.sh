@@ -60,6 +60,7 @@ then
 	git checkout "tags/${assignment}"
 else
 	echo "Tag ${assignment} not found, building master instead"
+	git checkout master
 fi
 
 export GLM_INCLUDE_DIR='/usr/include/glm/'
