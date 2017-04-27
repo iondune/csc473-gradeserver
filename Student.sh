@@ -334,7 +334,7 @@ do
 		echo '</code></pre>' >> "$student_site"
 		modal_window_end
 	else
-		img_diff=$(compare -metric AE -fuzz 3 "$tests_directory/$out_file" "$out_file" "difference_$out_file" 2>&1)
+		img_diff=$(compare -metric AE -fuzz 5% "$tests_directory/$out_file" "$out_file" "difference_$out_file" 2>&1)
 
 		echo "Difference: $img_diff"
 		button_class="success"
@@ -344,10 +344,10 @@ do
 			echo "Image doesn't match!"
 			echo "<p><span class=\"text-danger\">Image for ${test_name}.pov failed - image does not match.</span></p>" >> "$student_site"
 		elif [[ "$img_diff" -gt 0 ]]; then
-			button_class="warning"
+			button_class="info"
 			echo "Image nearly matches!"
 			echo "<p><span class=\"text-success\">Image for ${test_name}.pov passed - imaged matches.</span></p>" >> "$student_site"
-			echo "<p><span class=\"text-warning\">(Found $img_diff pixel differences - up to 1000 are allowed)</span></p>" >> "$student_site"
+			echo "<p><span class=\"text-primary\">(Found $img_diff pixel differences - up to 1000 are allowed)</span></p>" >> "$student_site"
 		else
 			echo "Image matches!"
 			echo "<p><span class=\"text-success\">Image for ${test_name}.pov passed - imaged matches.</span></p>" >> "$student_site"
@@ -437,7 +437,7 @@ if [ -f "$tests_directory/extra.txt" ]; then
 			echo "</p>" >> $student_site
 
 			echo "<p>" >> $student_site
-			modal_window_start "output_"$test_name "Program Output (Render ${test_name}.pov)" "$button_class"
+			modal_window_start "output_"$test_name "Program Output (Render ${test_name}.pov)" "info"
 			echo -n '<pre><code>' >> "$student_site"
 			cat render_output >> "$student_site"
 			echo '</code></pre>' >> "$student_site"
