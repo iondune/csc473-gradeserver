@@ -401,15 +401,7 @@ if [ -f "$tests_directory/extra.txt" ]; then
 		args_file="${tests_directory}/${test_name}.args"
 		out_file="extra_${test_name}.png"
 
-		echo "Rendering image ${test_name}.pov -> $out_file"
-		echo "Path is $pov_file"
-		echo "Command is ./raytrace render $pov_file 640 480" $(< "$args_file")
-		{ ./raytrace render "$pov_file" 640 480 $(< "$args_file"); } > render_output 2>&1
-		mv "output.png" "$out_file"
-
-
 		echo "<h3>${test_name}.pov</h3>" >> "$student_site"
-
 		if [ -f "$args_file" ]; then
 
 			echo "<p>" >> "$student_site"
@@ -419,6 +411,12 @@ if [ -f "$tests_directory/extra.txt" ]; then
 			cat "$args_file" >> "$student_site"
 			echo '</code></p>' >> "$student_site"
 		fi
+
+		echo "Rendering image ${test_name}.pov -> $out_file"
+		echo "Path is $pov_file"
+		echo "Command is ./raytrace render $pov_file 640 480" $(< "$args_file")
+		{ ./raytrace render "$pov_file" 640 480 $(< "$args_file"); } > render_output 2>&1
+		mv "output.png" "$out_file"
 
 		if [ $? -ne 0 ]; then
 			failed_tests="${failed_tests}$test_name"
