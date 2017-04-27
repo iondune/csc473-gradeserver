@@ -48,8 +48,8 @@ cd "repo/"
 
 git clean -d -x -f
 git reset --hard
-git fetch origin master
-git pull
+git fetch origin master --tags
+git pull origin master
 echo "Tags:"
 git tag -l
 echo
