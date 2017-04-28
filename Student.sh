@@ -314,14 +314,33 @@ done
 echo '</tbody></table>' >> $student_site
 echo '<h2>Image Tests</h2>' >> "$student_site"
 
-for test_name in $(< "$tests_directory/images.txt")
+while read -r line
 do
+	read -ra array <<< "$line"
+
+	len=${#array[@]}
+
+	if [ $len -lt 2 ]; then
+		echo "Malformed image line: $line"
+		continue
+	fi
+
+	test_name=${array[0]}
+	cmd=${array[1]}
+	args=
+	for (( i=2; i<${len}; i++ ));
+	do
+		args="${args} ${array[$i]}"
+	done
+
 	pov_file="${inputs_directory}/${test_name}.pov"
 	out_file="${test_name}.png"
 
 	echo "Rendering image ${test_name}.pov -> $out_file"
 	echo "Path is $pov_file"
-	{ ./raytrace render "$pov_file" 640 480; } > render_output 2>&1
+	echo "cmd is $cmd"
+	echo "args is $args"
+	{ ./raytrace "$cmd" "$pov_file" 640 480 "$args"; } > render_output 2>&1
 	mv "output.png" "$out_file"
 
 	if [ $? -ne 0 ]; then
@@ -389,33 +408,52 @@ do
 		echo '<hr />' >> $student_site
 	fi
 
-done
+done < "$tests_directory/images.txt"
 
 if [ -f "$tests_directory/extra.txt" ]; then
 
 	echo '<h2>Rendered Images</h2>' >> "$student_site"
 
-	for test_name in $(< "$tests_directory/extra.txt")
+	while read -r line
 	do
+		read -ra array <<< "$line"
+
+		len=${#array[@]}
+
+		if [ $len -lt 2 ]; then
+			echo "Malformed image line: $line"
+			continue
+		fi
+
+		test_name=${array[0]}
+		cmd=${array[1]}
+		args=
+		for (( i=2; i<${len}; i++ ));
+		do
+			args="${args} ${array[$i]}"
+		done
+
 		pov_file="${inputs_directory}/${test_name}.pov"
-		args_file="${tests_directory}/${test_name}.args"
 		out_file="extra_${test_name}.png"
 
+		echo "Rendering image ${test_name}.pov -> $out_file"
+		echo "Path is $pov_file"
+		echo "cmd is $cmd"
+		echo "args is $args"
+
 		echo "<h3>${test_name}.pov</h3>" >> "$student_site"
-		if [ -f "$args_file" ]; then
+		if [ ! -z "$args" ]; then
 
 			echo "<p>" >> "$student_site"
 			echo "Arguments:" >> "$student_site"
 			echo "</p>" >> "$student_site"
 			echo -n '<p><code>' >> "$student_site"
-			cat "$args_file" >> "$student_site"
+			echo -n "$args" >> "$student_site"
 			echo '</code></p>' >> "$student_site"
 		fi
 
-		echo "Rendering image ${test_name}.pov -> $out_file"
-		echo "Path is $pov_file"
-		echo "Command is ./raytrace render $pov_file 640 480" $(< "$args_file")
-		{ ./raytrace render "$pov_file" 640 480 $(< "$args_file"); } > render_output 2>&1
+		echo "Command is: ./raytrace $cmd $pov_file 640 480 $args"
+		{ ./raytrace "$cmd" "$pov_file" 640 480 $args ; } > render_output 2>&1
 		mv "output.png" "$out_file"
 
 		if [ $? -ne 0 ]; then
@@ -446,7 +484,7 @@ if [ -f "$tests_directory/extra.txt" ]; then
 			echo '<hr />' >> $student_site
 		fi
 
-	done
+	done < "$tests_directory/extra.txt"
 fi
 
 if [ -z "$failed_tests" ]; then
