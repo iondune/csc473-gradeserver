@@ -349,8 +349,8 @@ do
 	echo "Rendering image ${test_name}.pov -> $out_file"
 	echo "Path is $pov_file"
 	echo "cmd is $cmd"
-	echo "args is $args"
-	{ ./raytrace "$cmd" "$pov_file" 640 480 "$args"; } > render_output 2>&1
+	echo "args is '$args'"
+	{ ./raytrace "$cmd" "$pov_file" 640 480 $args; } > render_output 2>&1
 	mv "output.png" "$out_file"
 
 	if [ $? -ne 0 ]; then
