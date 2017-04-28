@@ -64,6 +64,9 @@ else
 	git checkout master
 fi
 
+echo "Current commit:"
+git log -n 1 --date=local HEAD
+
 export GLM_INCLUDE_DIR='/usr/include/glm/'
 export EIGEN3_INCLUDE_DIR='/usr/include/eigen3/'
 
@@ -119,6 +122,12 @@ echo '<h1>[CPE 473] Program 1 Grade Results</h1>' >> "$student_site"
 echo "<p>Student: $student</p>" >> "$student_site"
 echo "<p>Last Run: "$(TZ=America/Los_Angeles date)"</p>" >> "$student_site"
 echo "<p><a href=\"../\">&lt;&lt; Back to All Grades</a></p>" >> "$student_site"
+
+
+echo "<p><span>Current Commit:</span></p>" >> "$student_site"
+echo -n '<pre><code>' >> "$student_site"
+git log -n 1 --date=local HEAD >> "$student_site"
+echo '</code></pre>' >> "$student_site"
 
 # Directory listing
 modal_window_start "file_view" "Directory Structure" "primary"
@@ -504,7 +513,7 @@ if [ -z "$failed_tests" ]; then
 		touch "$passfile"
 		TZ=America/Los_Angeles date >> "$passfile"
 		echo >> "$passfile"
-		git log -n 1 HEAD >> "$passfile"
+		git log -n 1 --date=local HEAD >> "$passfile"
 
 		echo "<p><span>Pass Info:</span></p>" >> "$student_site"
 	fi
