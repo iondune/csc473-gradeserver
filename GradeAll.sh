@@ -41,7 +41,8 @@ echo '<table class="table table-striped">' >> $teacher_site
 echo '<thead>' >> $teacher_site
 echo '<tr>' >> $teacher_site
 echo '<th>Student</th>' >> $teacher_site
-for assignment in p1 p2; do
+for assignment in $(< "$exec_directory/assignments" )
+do
 	echo "<th>${assignment}</th>" >> $teacher_site
 done
 echo '<th>Repo Link</th>' >> $teacher_site
@@ -77,7 +78,7 @@ do
 	echo "</td><td>" >> "$teacher_site"
 
 
-	for assignment in p1 p2
+	for assignment in $(< "$exec_directory/assignments" )
 	do
 
 		"$exec_directory/Student.sh" "$student" "$assignment"
