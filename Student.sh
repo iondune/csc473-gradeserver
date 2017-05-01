@@ -218,6 +218,25 @@ elif [[ -f "Makefile" || -f "makefile" ]]; then
 		exit 1
 	fi
 
+elif [[ -f "src/Makefile" || -f "src/makefile" ]]; then
+
+	echo "Found Makefile in src/, doing Make build"
+	cd "src/"
+
+	make > make_output 2>&1
+	if [ $? -ne 0 ]; then
+		echo "Makefile build failed!"
+
+		# Write website
+		echo '<p><span class="text-danger">make build failed.</span></p>' >> "$student_site"
+		echo -n '<pre><code>' >> "$student_site"
+		cat make_output >> "$student_site"
+		echo '</code></pre>' >> "$student_site"
+
+		cleanup
+		exit 1
+	fi
+
 else
 
 	echo '<p><span class="text-danger">No <code>Makefile</code> or <code>CMakeLists.txt</code> found.</span></p>' >> "$student_site"
