@@ -319,7 +319,7 @@ do
 	echo '<tr><td>'$test_name'</td><td>' >> $student_site
 
 	echo "Running test $args_file $out_file"
-	{ timeout 60s ./raytrace $(< "$args_file"); } > mytest.out 2>&1
+	{ timeout 20s ./raytrace $(< "$args_file"); } > mytest.out 2>&1
 
 	if [ $? -gt 123 ]; then
 		echo '<span class="label label-danger">Timeout</span>' >> "$student_site"
@@ -374,10 +374,10 @@ do
 	echo "Path is $pov_file"
 	echo "cmd is $cmd"
 	echo "args is '$args'"
-	{ timeout 60s ./raytrace "$cmd" "$pov_file" 640 480 $args; } > render_output 2>&1
+	{ timeout 360s ./raytrace "$cmd" "$pov_file" 640 480 $args; } > render_output 2>&1
 
 	if [ $? -gt 123 ]; then
-		echo "<p><span class=\"text-danger\">Image for $test_name failed - timeout occured (60 seconds).</span></p>" >> "$student_site"
+		echo "<p><span class=\"text-danger\">Image for $test_name failed - timeout occured (5 minutes) or runtime error.</span></p>" >> "$student_site"
 	fi
 
 	mv "output.png" "$out_file"
@@ -492,10 +492,10 @@ if [ -f "$tests_directory/extra.txt" ]; then
 		fi
 
 		echo "Command is: ./raytrace $cmd $pov_file 640 480 $args"
-		{ timeout 60s ./raytrace "$cmd" "$pov_file" 640 480 $args ; } > render_output 2>&1
+		{ timeout 360s ./raytrace "$cmd" "$pov_file" 640 480 $args ; } > render_output 2>&1
 
 		if [ $? -gt 123 ]; then
-			echo "<p><span class=\"text-danger\">Image for $test_name failed - timeout occured (60 seconds).</span></p>" >> "$student_site"
+			echo "<p><span class=\"text-danger\">Image for $test_name failed - timeout occured (5 minutes) or runtime error.</span></p>" >> "$student_site"
 		fi
 
 		mv "output.png" "$out_file"
